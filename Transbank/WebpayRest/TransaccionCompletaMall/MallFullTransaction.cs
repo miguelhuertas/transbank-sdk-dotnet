@@ -12,8 +12,8 @@ namespace Transbank.Webpay.TransaccionCompletaMall
 {
     public class MallFullTransaction
     {
-        private static string _commerceCode = "";
-        private static string _apiKey = "";
+        private static string _commerceCode = "597055555551";
+        private static string _apiKey = "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C";
         
         private static WebpayIntegrationType _integrationType = WebpayIntegrationType.Test;
         
@@ -66,7 +66,7 @@ namespace Transbank.Webpay.TransaccionCompletaMall
             string cardExpirationDate,
             List<CreateDetails> details)
         {
-            return Create(buyOrder, sessionId, cardNumber, cardExpirationDate, details);
+            return Create(buyOrder, sessionId, cardNumber, cardExpirationDate, details, DefaultOptions());
         }
 
         public static MallCreateResponse Create(
@@ -128,7 +128,7 @@ namespace Transbank.Webpay.TransaccionCompletaMall
             string token,
             List<MallInstallmentsDetails> details)
         {
-            return Installments(token, details);
+            return Installments(token, details, DefaultOptions());
         }
 
         public static MallInstallmentsDetailsResponse Installments(
@@ -138,7 +138,7 @@ namespace Transbank.Webpay.TransaccionCompletaMall
         {
             return ExceptionHandler.Perform<MallInstallmentsDetailsResponse, MallTransactionInstallmentsExceptions>(() =>
             {
-               List<MallInstallmentsResponse> details = new List<MallInstallmentsResponse>();
+               List<MallInstallmentsResponse> installmentReoposeDetail = new List<MallInstallmentsResponse>();
 
                foreach (MallInstallmentsDetails req in detailsGroup)
                {
@@ -149,15 +149,9 @@ namespace Transbank.Webpay.TransaccionCompletaMall
                        req.InstallmentsNumber);
 
                    var response = RequestService.Perform<MallTransactionInstallmentsExceptions>(request, options);
-                   var json = JsonConvert.DeserializeObject<MallInstallmentsResponse>(response);
-                   
-                   details.Add(new MallInstallmentsResponse(json.InstallmentsAmount, json.IdQueryInstallments, json.DeferredPeriods));
-
+                   installmentReoposeDetail.Add(JsonConvert.DeserializeObject<MallInstallmentsResponse>(response));
                }
-
-              
-
-               return JsonConvert.DeserializeObject<MallInstallmentsDetailsResponse>(details.ToString());
+               return new MallInstallmentsDetailsResponse(installmentReoposeDetail);
             });
         }
 
@@ -193,6 +187,11 @@ namespace Transbank.Webpay.TransaccionCompletaMall
             int amount)
         {
             return Refund(token, buyOrder, commerceCode, amount);
+        }
+
+        public static object Installments(string token)
+        {
+            throw new NotImplementedException();
         }
 
         public static MallRefundResponse Refund(

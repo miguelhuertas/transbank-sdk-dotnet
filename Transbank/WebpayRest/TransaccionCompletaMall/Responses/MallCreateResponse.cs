@@ -8,10 +8,13 @@ namespace Transbank.Webpay.TransaccionCompletaMall.Responses
         [JsonProperty("token")]
         public string Token { get; set; }
 
-        public MallCreateResponse(
-            string token)
+        public MallCreateResponse(string token)
         {
             Token = token;
+        }
+        public override string ToString()
+        {
+            return $"Token={Token}";
         }
     }
 }
